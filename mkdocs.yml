@@ -1,0 +1,159 @@
+site_name: "Stack Documentation"
+
+theme:
+  name: material
+
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.expand
+    - navigation.instant
+    - navigation.tracking
+    - content.code.copy
+
+extra_css:
+  - stylesheets/default.css
+
+
+plugins:
+  - macros
+  
+extra:
+  domain: comp.local
+  litellm_url: https://litellm.devaiclarity.hu/  
+  litellm_url_ui: https://litellm.devaiclarity.hu/ui/
+  openwebui_url: https://openwebui.devaiclarity.hu/
+  passwd_url : https://passwd.devaiclarity.hu/
+  grafana_dev_url : https://grafana.devaiclarity.hu/
+  grafana_prod_url : https://grafana.aiclarity.hu/
+  nexus_url: https://aiclarity.hu:8443/
+  nexus_url_without_https: aiclarity.hu:8443
+  
+  host_file_openwebui : 172.28.10.13 openwebui.devaiclarity.hu
+  host_file_ldapadmin : 172.28.10.13 ldapadmin.devaiclarity.hu
+  host_file_litellm : 172.28.10.13 litellm.devaiclarity.hu
+  host_file_traefik : 172.28.10.13 traefik.devaiclarity.hu
+  host_file_ssoai : 172.28.10.13 ssoai.devaiclarity.hu
+  host_file_grafana : 172.28.10.13 grafana.devaiclarity.hu
+  host_file_passwd : 172.28.10.13 passwd.devaiclarity.hu
+  host_file_vault : 172.28.10.13 vault.devaiclarity.hu
+  host_file_docs : 172.28.10.13 docs.aiclarity.hu
+  host_file_nexus : 172.28.10.13 aiclarity.hu
+  
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.tasklist
+  - pymdownx.superfences
+
+nav:
+  - "🏠 Kezdőlap": index.md
+
+  - "🧑‍💻 Fejlesztői":
+      - "📄 Áttekintés": developer/index.md
+
+      - "📘 Dokumentáció":
+          - "📖 Használata": developer/documentation.md
+          - "➕ Oldal felvétele": developer/mkdocs_yml_section.md
+          - "🤖 LLM dokumentáció generálás": developer/llm_documentation_generation.md
+          - "🧠 LLM System Prompt": prompts/llm_docs_system_prompt.md
+
+      - "💻 Fejlesztői környezet":
+          - "📄 Áttekintés": developer/environment/index.md
+          - "🌿 Git kezelés": developer/environment/git.md
+          - "⬇️ Telepítés": developer/environment/install.md
+          - "🖥️ Dev szerver elérése": developer/environment/dev_connection.md
+          - "🚀 CI/CD": developer/environment/cicd.md
+          
+      - "🧩 Framework segéd komponensek":
+          - "📄 Áttekintés": developer/supporting_components/index.md
+          - "📦 Nexus": developer/supporting_components/nexus.md
+          - "🔐 Hashicorp Vault": developer/supporting_components/vault.md
+          - "Document export": developer/document_export/PandocToDocs.md
+          
+      - RAG:
+          - Ingest pipeline: developer/rag/docling_pipeline.md
+          - Gateway: developer/rag/rag_gateway.md
+
+      - "🧱 Framework komponensek":
+          - "📄 Áttekintés": developer/framework_components/index.md
+          - "🔑 Vault Agent": developer/framework_components/vault-agent.md
+          - "📊 Central Logger": developer/framework_components/central-logger.md
+          - "🌐 Traefik": developer/framework_components/traefik.md
+          - "🧠 Valkey": developer/framework_components/valkey.md
+          - "🔑 Dex": developer/framework_components/dex.md
+          - "🖥️ OpenWebUI DB": developer/framework_components/openwebui_db.md
+          - "🧠 OpenWebUI": developer/framework_components/openwebui.md
+          - "Custom OpenWebUI": developer/framework_components/openwebui_custom_readme.md
+          - "👥 OpenLDAP": developer/framework_components/openldap.md
+          - "🔒 PWM": developer/framework_components/pwm.md
+          - "🔐 LiteLLM OAuth2 Proxy": developer/framework_components/litellm_oauth2_proxy.md
+          - "🗄️ LiteLLM DB": developer/framework_components/litellm-db.md
+          - "🤖 LiteLLM": developer/framework_components/litellm.md
+          - "🚪 API Gateway": developer/framework_components/api-gateway.md
+          - "🔎 RAG DB": developer/framework_components/rag-db.md
+          - "🧮 PGVector": developer/framework_components/litellm-pgvector.md
+          - "⬆️ RAG Ingest": developer/framework_components/rag-ingest.md
+          - "🚪 RAG Gateway": developer/framework_components/rag-gateway.md
+          - "🧪 Phoenix": developer/framework_components/phoenix.md
+          - "⛔ Guardrail Rejector": developer/framework_components/guardrail-rejector.md
+          - "⚡ Hit Events Worker": developer/framework_components/hit-events-worker.md
+          - "🚫 Blocklist Cache Worker": developer/framework_components/blocklist-cache-worker.md
+          - "📊 Grafana": developer/framework_components/grafana.md
+          - "🕵️ Presidio Analyzer": developer/framework_components/presidio-analyzer.md
+          - "🧹 Presidio Anonymizer": developer/framework_components/presidio-anonymizer.md
+          - "🔍 SearXNG": developer/framework_components/searxng.md
+          - "📉 Loki": developer/framework_components/loki.md
+          - "📡 Promtail": developer/framework_components/promtail.md
+          - "🧹 Vault Cleanup": developer/framework_components/vault-cleanup.md
+          - "📈 Prometheus": developer/framework_components/prometheus.md
+          - "🖥️ Node-exporter": developer/framework_components/node-exporter.md
+          - "📦 Cadvisor": developer/framework_components/cadvisor.md
+
+
+      - "🖼️ Imagek frissítése":
+          - "🚀 Kezdő lépések": developer/image_update/update.md
+          - "DB mentés és visszatöltés": developer/image_update/db_backup_restore.md
+          - "🤖 LiteLLM frissítése": developer/image_update/litellm_update.md
+          - "🧠 OpenWebUI frissítése": developer/image_update/openwebui_update.md
+
+      - "⚙️ Autogenerated":
+          - "🧾 Services": _generated/services/index.md
+          - "🚦 Traefik routing": _generated/traefik/routing.md
+          - "⚙️ Config":
+              - "🔧 Env vars": _generated/config/env-vars.md
+              - "🔐 Secrets": _generated/config/secrets.md
+              - "💾 Volumes": _generated/config/volumes.md
+
+  - "🚀 Telepítés és üzemeltetés":
+      - "📄 Áttekintés": ops/index.md
+
+      - "📦 Telepítési folyamat":
+          - "📄 Áttekintés": ops/install/index.md
+          - "✅ Előkészületek": ops/install/prerequisites.md
+          - "🖥️ Alap infrastruktúra": ops/install/base.md
+          - "🔐 Vault secret kezelés": ops/install/vault.md
+          - "👥 Auth (Dex, LDAP)": ops/install/auth.md
+          - "🧱 Core szolgáltatások": ops/install/core.md
+          - "🧠 RAG stack": ops/install/rag.md
+          - "📊 Monitoring": ops/install/monitoring.md
+          - "✔️ Ellenőrzés": ops/install/validation.md
+
+      - "⚙️ Komponensek beállítása":
+          - "📄 Áttekintés": ops/components/index.md
+          - "🌐 Traefik": ops/components/traefik.md
+          - "🔐 Vault": ops/components/vault.md
+          - "🔑 Dex": ops/components/dex.md
+          - "🧠 OpenWebUI": ops/components/openwebui.md
+          - "🤖 LiteLLM": ops/components/litellm.md
+          - "📊 Grafana": ops/components/grafana.md
+
+  - "👤 Felhasználói":
+      - "📄 Áttekintés": user/index.md

@@ -1,0 +1,37 @@
+services:
+  docs:
+    image: aiclarity.hu:8443/docker-ssl/mkdocs:1.0.0
+    container_name: mkdocs
+
+    working_dir: /work
+
+    volumes:
+      - ./docs:/work/docs:rw
+      - ./mkdocs.yml:/work/mkdocs.yml:ro
+      - ./scripts:/work/scripts:ro
+      - ./docker-compose.yml:/work/docker-compose.yml:ro
+      - ./stylesheets:/work/stylesheets
+
+    ports:
+      - "8010:8000"
+
+    networks:
+      - mkdocs-net
+
+    environment:
+      - WATCHDOG_USE_POLLING=true
+      - WATCHDOG_POLLING_INTERVAL=1
+      - PYTHONUNBUFFERED=1
+
+    entrypoint: ["mkdocs"]
+
+    command:
+      - serve
+      - -a
+      - 0.0.0.0:8000
+      - --dirtyreload
+
+networks:
+  mkdocs-net:
+    external: true
+    name: mkdocs-net

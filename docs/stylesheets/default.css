@@ -1,0 +1,163 @@
+/* =========================
+   SIDEBAR ALAP LAYOUT
+========================= */
+
+.md-sidebar--primary {
+  width: 340px;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+}
+
+.md-sidebar__scrollwrap {
+  padding-right: 6px;
+}
+
+.md-sidebar__inner {
+  width: 100%;
+}
+
+/* nagyobb képernyő */
+@media screen and (min-width: 1220px) {
+  .md-sidebar--primary {
+    width: 340px;
+  }
+}
+
+/* =========================
+   NAV ÁLTALÁNOS
+========================= */
+
+.md-nav {
+  line-height: 1.35;
+}
+
+/* =========================
+   NAV ITEM (LINK)
+   ⚠️ FONTOS: NINCS FLEX!
+========================= */
+
+.md-nav__link {
+  border-radius: 6px;
+  padding: 6px 10px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+/* hover */
+.md-nav__link:hover {
+  background-color: rgba(33, 150, 243, 0.08);
+}
+
+/* aktív oldal */
+.md-nav__link[aria-current="page"] {
+  background: linear-gradient(
+    90deg,
+    rgba(25,118,210,0.15) 0%,
+    rgba(25,118,210,0.05) 100%
+  );
+  border-left: 4px solid #1976d2;
+  padding-left: 6px;
+}
+
+/* =========================
+   SECTION HEADERS (pl. 📦 Telepítés)
+========================= */
+
+.md-nav__item--section > .md-nav__link {
+  padding-left: 4px;
+}
+
+/* ne törjük el a toggle-t! */
+.md-nav__toggle {
+  margin-right: 6px;
+}
+
+/* =========================
+   EXPAND ANIMATION FIX
+========================= */
+
+.md-nav__item--nested .md-nav__list {
+  margin-left: 6px;
+}
+
+/* =========================
+   TABS (felső menü)
+========================= */
+
+.md-tabs__link--active {
+  border-bottom: 2px solid #1976d2;
+}
+
+/* =========================
+   SCROLL + FINOMÍTÁSOK
+========================= */
+
+html {
+  overflow-y: scroll;
+}
+
+.md-sidebar__scrollwrap {
+  scrollbar-width: thin;
+}
+
+/* finom függőleges guide vonal */
+.md-nav__list {
+  border-left: 1px solid rgba(0,0,0,0.06);
+  margin-left: 6px;
+  padding-left: 10px;
+}
+
+/* aktív ág kiemelése */
+.md-nav__item--active > .md-nav__link,
+.md-nav__link[aria-current="page"] {
+  border-left: 3px solid #1976d2;
+}
+
+/* =========================
+   COLLAPSIBLE SECTIONS FIX
+========================= */
+
+/* ne nyúljunk a layout struktúrához */
+.md-nav__item--nested > .md-nav__toggle {
+  margin-right: 6px;
+}
+
+/* jobb click area */
+.md-nav__item--nested > .md-nav__link {
+  padding-right: 10px;
+}
+
+/* animált érzés */
+.md-nav__item--nested .md-nav__list {
+  transition: all 0.15s ease;
+}
+
+.md-nav {
+    font-size: 0.6rem;
+}
+
+/* Automatikus számozás */
+.md-content {
+  counter-reset: h2counter;
+}
+
+/* H2 */
+.md-content h2 {
+  counter-increment: h2counter;
+  counter-reset: h3counter;
+}
+
+.md-content h2::before {
+  content: counter(h2counter) ". ";
+  color: #000;
+  font-weight: 400;
+}
+
+/* H3 */
+.md-content h3 {
+  counter-increment: h3counter;
+}
+
+.md-content h3::before {
+  content: counter(h2counter) "." counter(h3counter) " ";
+  color: #000;
+  font-weight: 400;
+}
