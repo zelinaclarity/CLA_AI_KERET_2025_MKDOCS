@@ -97,6 +97,8 @@ nav:
           - "🔐 LiteLLM OAuth2 Proxy": developer/framework_components/litellm_oauth2_proxy.md
           - "🗄️ LiteLLM DB": developer/framework_components/litellm-db.md
           - "🤖 LiteLLM": developer/framework_components/litellm.md
+          - "🗄️ Guardrails DB": developer/framework_components/guardrails-db.md
+          - "🕵 Guardrails": developer/framework_components/guardrails.md
           - "🚪 API Gateway": developer/framework_components/api-gateway.md
           - "🔎 RAG DB": developer/framework_components/rag-db.md
           - "🧮 PGVector": developer/framework_components/litellm-pgvector.md
