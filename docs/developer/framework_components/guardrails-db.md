@@ -148,3 +148,7 @@ A guardrail döntés alapján végrehajtott akciók tárolása.
 - guardrail_checks.id → központi entity
 - guardrail_findings.check_id → találatok egy check-hez
 - guardrail_actions.check_id → akciók egy check-hez
+
+### Adatbázis kapcsolat
+
+![](images/guardrails_3.png)

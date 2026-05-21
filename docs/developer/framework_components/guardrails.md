@@ -1,291 +1,167 @@
-# LiteLLM
+# Guardrails
 
 ## Cél
 
-A `litellm` a modellekhez vezető központi gateway / proxy réteg.
+A guardrails szolgáltatás egy AI safety / policy enforcement réteg, amely:
 
-## Compose szerep
+- bejövő LLM üzeneteket ellenőriz
+- PII / credential / sensitive data detektál
+- döntést hoz (allow / block / replace)
+- audit adatokat ment a guardrails-db-be
 
-- image: `ghcr.io/berriai/litellm:v1.81.0-stable`
-- container_name: `litellm`
-- restart: `unless-stopped`
+## Compose konfiguráció
+
+| Tulajdonság    | Érték                                         | Leírás                     |
+| -------------- | --------------------------------------------- | -------------------------- |
+| Service név    | guardrails                                    | AI safety engine container |
+| Image          | aiclarity.hu:8443/docker-ssl/guardrails:1.0.0 | privát registry image      |
+| Konténer név   | guardrails                                    | fix runtime name           |
+| Restart policy | unless-stopped                                | automatikus újraindítás    |
+| Hálózat        | llmnet                                        | belső service mesh         |
+
 
 ## Függőségek
 
 - `vault-agent`
-- `valkey`
-- `litellm-db`
+- `litellm`
+- `guardrails-db`
 
-## Fő konfiguráció
+## Port mapping
 
-- config file: `/app/config.yaml`
-- Redis backend: `redis://valkey:6379`
-- Phoenix tracing endpoint: `http://phoenix:6006/v1/traces`
-- auth mode: `proxy`
+| Host port | Container port | Leírás                  |
+| --------- | -------------- | ----------------------- |
+| 8100      | 8000           | Guardrails API endpoint |
 
-## Mountok
 
-- `./litellm/config.yaml:/app/config.yaml:ro`
-- `./litellm/custom_guardrail.py:/app/custom_guardrail.py:ro`
-- `./litellm.secrets-entrypoint.sh:/entry/litellm.secrets-entrypoint.sh:ro`
-- `vault-secrets:/secrets:ro`
+## Volume mapping
 
-## Kapcsolódó komponensek
+| Path                  | Cél            | Típus | Funkció                   |
+| --------------------- | -------------- | ----- | ------------------------- |
+| ./guardrails/rails    | /app/rails     | RO    | policy rules (core logic) |
+| server.py             | /app/server.py | RO    | API entry server          |
+| guardrails_engine.py  | engine         | RO    | decision engine           |
+| guardrails_config.yml | config         | RO    | system config             |
+| ./guardrails/logs     | /app/logs      | RW    | runtime logs              |
+| vault-secrets         | /secrets       | RO    | Vault credentials         |
 
-- `litellm_oauth2_proxy`
-- `api-gateway`
-- `litellm-pgvector`
-- `rag-ingest`
-- `rag-gateway`
 
-## Fejlesztői megjegyzések
+## Környezeti változók
 
-- Ez a framework egyik központi komponense.
-- Külön dokumentációt érdemel:
-  - virtual key kezelés,
-  - model routing,
-  - guardrail integráció,
-  - tracing.
+| Változó | Jelentés                          |
+| ------- | --------------------------------- |
+| TZ      | időzóna                           |
+| DB_HOST | PostgreSQL host (`guardrails-db`) |
+| DB_NAME | adatbázis neve                    |
+| DB_USER | adatbázis user                    |
+
+Ez felel:
+
+- Vault secret-ek betöltéséért
+- runtime config patch-elésért
+- env override-ért
+
+## Entry point (nagyon fontos)
+
+```markdown
+entrypoint: ["/bin/sh", "/app/guardrails.secrets-entrypoint.sh"]
+```
 
 ## Docker Compose fájl
 
 ```markdown
-  litellm:
-    image: ghcr.io/berriai/litellm:v1.81.0-stable
-    container_name: litellm
+  guardrails:
+    image: aiclarity.hu:8443/docker-ssl/guardrails:1.0.0
+    container_name: guardrails
     restart: unless-stopped
     environment:
-      TZ: "${TZ:-Europe/Budapest}"
-      LITELLM_CONFIG: "/app/config.yaml"
-      STORE_MODEL_IN_DB: false
-      PORT: "4000"
-      REDIS_URL: "redis://valkey:6379"
-      LITELLM_LOG: "INFO"
-      OPENAI_API_KEY: sk-local # FOR LM Studio server
-      USE_PRISMA_MIGRATE: "false"
-      PHOENIX_COLLECTOR_HTTP_ENDPOINT: "http://phoenix:6006/v1/traces"
-      PHOENIX_PROJECT_NAME: "litellm"
-      LITELLM_AUTH_MODE: proxy
-    entrypoint: ["/bin/sh","/entry/litellm.secrets-entrypoint.sh"]
-    logging:
-      driver: syslog
-      options:
-        syslog-address: "udp://127.0.0.1:5514"
-        syslog-format: "rfc3164"
-        tag: "litellm"
+      TZ: "${TZ:-Europe/Budapest}"      
+      DB_HOST: guardrails-db
+      DB_NAME: guardrails
+      DB_USER: guardrails
+    entrypoint: ["/bin/sh", "/app/guardrails.secrets-entrypoint.sh"]
     volumes:
-      - ./litellm/config.yaml:/app/config.yaml:ro
-      - ./litellm/custom_guardrail.py:/app/custom_guardrail.py:ro
-      - ./litellm.secrets-entrypoint.sh:/entry/litellm.secrets-entrypoint.sh:ro
-      - vault-secrets:/secrets:ro
-    networks: [ llmnet ]
-    depends_on:
-      - vault-agent
-      - valkey
-      - litellm-db
-      
-  api-gateway:
-    build: ./api-gateway
-    container_name: api-gateway
-    restart: unless-stopped
+      - ./guardrails/rails:/app/rails:ro
+      - ./guardrails/server.py:/app/server.py:ro
+      - ./guardrails/guardrails.secrets-entrypoint.sh:/app/guardrails.secrets-entrypoint.sh:ro
+      - ./guardrails/logs:/app/logs  
+      - ./guardrails/guardrails_engine.py:/app/guardrails_engine.py:ro
+      - ./guardrails/guardrails_config.yml:/app/guardrails_config.yml:ro 
+      - vault-secrets:/secrets:ro    
+    ports:
+      - "8100:8000"
     networks: [ llmnet ]
     depends_on:
       - litellm
-    environment:
-      UPSTREAM: "http://litellm:4000"
-      TIMEOUT_S: "120"
-      TZ: "Europe/Budapest"
-    logging:
-      driver: syslog
-      options:
-        syslog-address: "udp://127.0.0.1:5514"
-        syslog-format: "rfc3164"
-        tag: "api-gateway"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.api-gateway.rule=Host(`${API_GATEWAY_DOMAIN}`)"
-      - "traefik.http.routers.api-gateway.entrypoints=websecure"
-      - "traefik.http.routers.api-gateway.tls=true"
-      - "traefik.http.services.api-gateway.loadbalancer.server.port=8080"
+      - vault-agent
+      - guardrails-db
 ```	  
 
-### LiteLLM + API Gateway
+## Rendszer komponensek
 
-A rendszer központi AI proxy rétege:
+### Policy layer
 
-- egységes API felület LLM-ekhez
-- több modell (OpenAI, LM Studio, stb.) kezelése
-- rate limit + auth + logging
-- tracing (Phoenix)
-- cache (Redis / Valkey)
+/app/rails -> szabály definíciók (regex, NLP, rules)
 
-A LiteLLM itt a core proxy engine.
+### Engine layer
 
-### LiteLLM service
+guardrails_engine.py -> risk scoring + decision logic
 
-| Paraméter | Jelentés |
-|----------|----------|
-| image | LiteLLM proxy container (v1.81.0) |
-| container_name | futó service neve |
-| restart | automatikus újraindítás |
-| PORT | 4000 → API port |
-| TZ | időzóna beállítás |
+### API layer
 
-### Konfigurációs logika
+server.py -> REST endpoint LLM integrációhoz
 
-| Beállítás | Jelentés |
-|----------|----------|
-| LITELLM_CONFIG | fő config fájl (model routing, auth, policy) |
-| STORE_MODEL_IN_DB | model meta adatok DB-ben tárolása (false = file-based) |
-| LITELLM_AUTH_MODE | proxy auth mód (itt: proxy = saját auth layer) |
+## Guardrail és LiteLLM összekapcsolása
 
-### Külső integrációk
+### LiteLLM teams és api_key létrehozása a Guardrails számára
 
-| Integráció | Szerep |
-|------------|-------|
-| REDIS_URL (valkey) | cache + rate limit + session state |
-| PHOENIX_COLLECTOR_HTTP_ENDPOINT | request tracing / observability |
-| PHOENIX_PROJECT_NAME | tracing project név |
-| OPENAI_API_KEY | fallback / LM Studio kompatibilitás |
+Teams létrehozása:
 
-### Security / entrypoint
+![](images/guardrails_2.png)
 
-entrypoint: /entry/litellm.secrets-entrypoint.sh
+Virtual_key létrehozása:
 
-- Vault-ból betölti a secret-eket
-- injektál API kulcsokat
-- runtime config patch
+![](images/guardrails_1.png)
 
-### Volumes
+### KEY_MAP módosítása
 
-| Volume | Funkció |
-|--------|--------|
-| config.yaml | model routing + policy |
-| custom_guardrail.py | saját AI guardrail logika |
-| vault-secrets | secret injection |
+A KEY_MAP kulcshoz fel kell venni azt a kulcs nevet, amit szeretnénk felülírni
 
-### Dependencies
+```markdown
+  litellm-key-sync:
+    # MANUAL TOOL:
+    # docker compose -f docker-compose.yml -f docker-compose.patch.yml run --rm litellm-key-sync
+    # python /app/rotate_delete_generate.py
+    image: python:3.12-slim
+    depends_on:
+      - litellm
+    networks: [ llmnet ]
+    volumes:
+      - ./litellm-key-sync:/app:rw
+      - vault-secrets:/secrets:rw
+    working_dir: /app
+    environment:
+      LITELLM_BASE_URL: "http://litellm:4000"
+      LITELLM_ADMIN_KEY_FILE: /secrets/litellm_master_key
+      KEY_MAP: "litellm_rag_gateway_virtual_key;litellm_pgvector_embed_service_virtual_key;litellm_guardrails_virtual_key"
+      OUT_DIR: "/app/out"
+      # DRY_RUN: "1"
+    command: >
+      sh -c "
+        pip install --no-cache-dir -r requirements.txt &&
+        echo '' &&
+        echo '############################################' &&
+        cat /app/usage.txt &&
+        echo '############################################' &&
+        sleep infinity
+      "
+```
 
-- vault-agent → secret management
-- valkey → Redis kompatibilis cache
-- litellm-db → persistence (ha kell)
+### LiteLLM key felülírása
 
-### API Gateway service
+Cmd-ben ki kell adni az alábbi parancsot a megfelelő könyvtárból:
 
-Ez egy reverse proxy réteg LiteLLM előtt:
+```markdown
+docker compose -f docker-compose.yml -f docker-compose.patch.yml run --rm litellm-key-sync sh -c "pip install --no-cache-dir -r requirements.txt && python /app/rotate_delete_generate.py"
+```
 
-- request kontroll
-- timeout kezelés
-- Traefik publikus API
 
-### Konfiguráció
-
-| Env | Jelentés |
-|-----|--------|
-| UPSTREAM | LiteLLM backend URL |
-| TIMEOUT_S | request timeout |
-| TZ | időzóna |
-
-### Architektúra szerep
-
-Client → API Gateway → LiteLLM → LLM modellek
-
-### Build alapú service
-
-build: ./api-gateway
-
-### Traefik exposure
-
-| Beállítás | Jelentés |
-|----------|---------|
-| Host rule | domain alapján elérés |
-| entrypoints | HTTPS only |
-| tls | titkosítás |
-| port 8080 | container belső port |
-
-## LITELLM ELÉRÉS
-
-URL: {{litellm_url}}
-
-![](images/litellm_1.png)
-
-Itt a Sing in with OpenID Connection gombal megyünk tovább.
-
-![](images/litellm_2.png)
-
-Az alice felhasználóval jelentkezünk be ismét.
-
-![](images/litellm_3.png)
-
-![](images/litellm_4.png)
-
-A „LiteLLM Admin Panel-en /ui„-t kell kiválasztani.
-Az AI_FRAMEWORK\secrets mappában lesz egy litellm_master_key abból kell a jelszó.
-
-![](images/litellm_5.png)
-
-Ide érkezünk.
-{{litellm_url_ui}}
-
-Ha mintent jól csináltuk, akkor a következő felületet kell látunk:
-
-![](images/litellm_6.png)
-
-## LITELLM alap config
-
-A Teams menüre lépve létrehozunk egy új team-et:
-
-![](images/litellm_7.png)
-
-Miután létrehoztuk a Teamet, egyből módosítsjuk is:
-
-![](images/litellm_8.png)
-
-![](images/litellm_9.png)
-
-![](images/litellm_10.png)
-
-A Models lenyíló menüből az ALL Proxy Models opciót állítjuk be, ezt csak jelenleg így enged.
-Következő lépésben a Virtual Keys menüben létrehozunk egy új kulcsot:
-
-![](images/litellm_11.png)
-
-A Service Account ID az tetszőlegesen adhatunk bármit. A Create Key-re nyomva felugrik egy ablak, ott a kulcsot kimásoljuk.
-Modell hozzáadása.
-
-![](images/litellm_12.png)
-
-Provider: Azure
-LiteLLM Model Name: azure/gpt-4o-mini
-API base: https://ccazureopenaieastus.openai.azure.com
-API version: 2025-01-01-preview
-Base model: azure/gpt-4o-mini
-Azure API Key:<<<Azure CC test>>> (Ezt a kdbx -ből kell)
-
-![](images/litellm_13.png)
-
-Ha sikeres volt a teszt, mentsük a modellt.
-
-![](images/litellm_14.png)
-
-## LITELLM INTEGRÁCIÓ OPENWEBUI-BAN
-
-A {{openwebui_url}} felületen a következő lépéseket kell végrehajtani:
-
-![](images/litellm_15.png)
-
-![](images/litellm_16.png)
-
-url: http://litellm:4000/v1
-Model: gpt-4o-mini Miután beírtuk a model nevét a „+”-ra nyomjunk rá, hogy elmentse
-A Barear sorban kell megadni a key-t, amit kimásoltunk a litellm-nél.
-
-![](images/litellm_17.png)
-
-Ezek után látnunk kell a beállított modellt:
-
-![](images/litellm_18.png)
-
-Ha mindent jól állítottunk be, akkor tudunk már beszélgetni vele, de a max_tokens alapértelmezetten 128-ra van állítva, ezt tudjuk feljebb rakni.
-
-![](images/litellm_19.png)
