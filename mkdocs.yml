@@ -24,6 +24,7 @@ extra_css:
 
 plugins:
   - macros
+  - search
   
 extra:
   domain: comp.local
