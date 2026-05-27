@@ -154,9 +154,17 @@ nav:
           - "🌐 Traefik": ops/components/traefik.md
           - "🔐 Vault": ops/components/vault.md
           - "🔑 Dex": ops/components/dex.md
+          - "👥 Ldap": ops/components/ldap.md
+          - "🕵 Guardrails": ops/components/guardrails.md
+          - "🖥 Guardrails-db": ops/components/guardrails-db.md
           - "🧠 OpenWebUI": ops/components/openwebui.md
           - "🤖 LiteLLM": ops/components/litellm.md
           - "📊 Grafana": ops/components/grafana.md
+          - "📈 Prometheus": ops/components/prometheus.md
+          - "🪵 Loki": ops/components/loki.md
+          - "📡 Promtail": ops/components/promtail.md
+          - "🖥️ Node Exporter": ops/components/node-exporter.md
+          - "📦 cAdvisor": ops/components/cadvisor.md
 
   - "👤 Felhasználói":
       - "📄 Áttekintés": user/index.md
