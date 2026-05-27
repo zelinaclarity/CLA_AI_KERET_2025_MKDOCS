@@ -171,4 +171,10 @@ Cmd-ben ki kell adni az alábbi parancsot a megfelelő könyvtárból:
 docker compose -f docker-compose.yml -f docker-compose.patch.yml run --rm litellm-key-sync sh -c "pip install --no-cache-dir -r requirements.txt && python /app/rotate_delete_generate.py"
 ```
 
+### Guardrails összekapcsolása az OpenWebUI-al
 
+OpenAI API: 
+
+- http://guardrails:8000/v1
+
+![](images/guardrails_10.png)
