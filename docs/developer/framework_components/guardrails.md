@@ -116,9 +116,16 @@ server.py -> REST endpoint LLM integrációhoz
 
 Teams létrehozása:
 
+- Név: Guardrails_Team
+- Models: All Proxy Models
+
 ![](images/guardrails_2.png)
 
 Virtual_key létrehozása:
+
+- Team: Guardrails_Team
+- Sevice Account ID: litellm_guardrails_virtual_key
+- Models: All Proxy Models
 
 ![](images/guardrails_1.png)
 
