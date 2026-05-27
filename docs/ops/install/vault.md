@@ -525,7 +525,7 @@ curl -k https://ipcím:8444/v1/sys/health
 
 ### Vault integráció (Vault Agent)
 
-[Vault Agent](../components/vault.md)
+[Vault Agent](../components/vault-agent.md)
 
 
 
