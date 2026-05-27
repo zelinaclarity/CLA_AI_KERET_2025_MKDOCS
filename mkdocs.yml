@@ -155,6 +155,7 @@ nav:
           - "🔐 Vault": ops/components/vault.md
           - "🔑 Dex": ops/components/dex.md
           - "👥 Ldap": ops/components/ldap.md
+          - "🚪 API Gateway": ops/components/api-gateway.md
           - "🕵 Guardrails": ops/components/guardrails.md
           - "🖥 Guardrails-db": ops/components/guardrails-db.md
           - "🧠 OpenWebUI": ops/components/openwebui.md
