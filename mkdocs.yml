@@ -163,7 +163,7 @@ nav:
           - "📈 Prometheus": ops/components/prometheus.md
           - "🪵 Loki": ops/components/loki.md
           - "📡 Promtail": ops/components/promtail.md
-          - "🖥️ Node Exporter": ops/components/node-exporter.md
+          - "🖥️ Node Exporter": ops/components/node.md
           - "📦 cAdvisor": ops/components/cadvisor.md
 
   - "👤 Felhasználói":
