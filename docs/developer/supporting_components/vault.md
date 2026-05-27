@@ -667,8 +667,15 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' vau
 
 ### Vault integráció (Vault Agent)
 
+A vault-agent feladata a Vaultból származó titkok előkészítése és a megosztott vault-secrets volume feltöltése a többi komponens számára.
+
 [Vault Agent](../framework_components/vault-agent.md)
 
+### Vault Cleanup
+
+A vault-cleanup egy segéd konténer, amely: - időzítve törli a Vault által kiírt secret fájlokat - csökkenti a secret-ek élettartamát a fájlrendszeren - növeli a biztonságot.
+
+[Vault Cleanup](../framework_components/vault-cleanup.md)
 
 
 

@@ -6,10 +6,10 @@ Az authentikációs rendszer beállítása.
 
 ## Lépések
 
-1. Vault agent elindítása
-2. Dex konfiguráció generálása
-3. LDAP elindítása
-4. OIDC endpoint ellenőrzése
+### Vault agent elindítása
+### Dex konfiguráció generálása
+### LDAP elindítása
+### OIDC endpoint ellenőrzése
 
 ## Ellenőrzés
 
@@ -19,5 +19,7 @@ Az authentikációs rendszer beállítása.
 ## Kapcsolódó
 
 Lásd részletesen:
-- ../components/dex.md
-- ../components/openldap.md
+
+1. [Vault agent dokumentáció](../components/vault-agent.md)
+2. [OpenLdap dokumentáció](../components/ldap.md)
+3. [Dex dokumentáció](../components/dex.md)
