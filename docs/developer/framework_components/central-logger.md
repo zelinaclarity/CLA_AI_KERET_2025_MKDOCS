@@ -130,12 +130,29 @@ Funkciói:
 * log routing más rendszerek felé
 * debug és audit támogatása
 
-A logok később továbbíthatók például:
 
-* **Loki**
-* **Grafana**
-* SIEM rendszerek
-* log archívumok
+## Docker Compose fájl
+
+```markdown
+  central-logger:
+    image: rsyslog/syslog_appliance_alpine:8.36.0-3.7
+    container_name: central-logger
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Budapest"
+    ports:
+      - "5514:5514/udp"
+      - "5514:5514/tcp"
+    volumes:
+      - ./rsyslog/rsyslog.conf:/etc/rsyslog.conf:ro
+      - ./rsyslog/conf.d:/etc/rsyslog.d:ro
+      - central-logger-logs:/var/log
+      - central-logger-work:/work
+      - central-logger-config:/config
+      - central-logger-logs2:/logs
+    networks:
+      - llmnet
+```
 
 ---
 
