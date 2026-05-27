@@ -181,9 +181,9 @@ https://vault.devaiclarity.hu:8444
 ![](images/vault/media/image15.png)
 
 
-# Vault beállítások
+## Vault beállítások
 
-## Login a vaultba
+### Login a vaultba
 
 ```bash
 docker exec -it vault vault login <ROOT_TOKEN>
@@ -191,7 +191,7 @@ docker exec -it vault vault login <ROOT_TOKEN>
 
 ![](images/vault/media/image16.png)
 
-## Secrets engine engedélyezése
+### Secrets engine engedélyezése
 
 ```bash
 docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault vault secrets enable -path=secret kv-v2
@@ -199,38 +199,38 @@ docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault vault secrets enable -
 
 ![](images/vault/media/image17.png)
 
-    ## Secretek feltöltése
-    Aktiváljuk a python virtuális környezetet, ezt már korábban létrehoztuk, pl: AI_FRAMEWORK\venv
-    ```bash
-    source venv/bin/activate
-    ```
-    A `CC_MI_keretrendszer.kdbx` fájlnak a `CLA_AI_KERET_2025\hashicorp-vault` szinten kell lennie.
-	Lépjünk be a hashicorp-vault\kdbx\ mappába.
+### Secretek feltöltése
+Aktiváljuk a python virtuális környezetet, ezt már korábban létrehoztuk, pl: AI_FRAMEWORK\venv
+```bash
+source venv/bin/activate
+```
+A `CC_MI_keretrendszer.kdbx` fájlnak a `CLA_AI_KERET_2025\hashicorp-vault` szinten kell lennie.
+Lépjünk be a hashicorp-vault\kdbx\ mappába.
 
-    ![](images/vault/media/image18.png)
-    ```bash
-    python vault_update_from_kdbx.py
-    ```
+![](images/vault/media/image18.png)
+```bash
+python vault_update_from_kdbx.py
+```
 
 A vault felületén a következőt kell, hogy lássuk, miután feltötlöttük a secreteket:
 
 ![](images/vault/media/image19.png)
 
-## Vault-config beállítások
+### Vault-config beállítások
 Ellenőrizzük, hogy a fájlok a `vault-config` mappában megtalálhatóak
 
 ![](images/vault/media/image20.png)
 
-## AppRole engedélyezés
+### AppRole engedélyezés
 
 
 ```bash
 docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault vault auth enable approle
 ```
 
-# AppRole létrehozása
+## AppRole létrehozása
 
-## IP lekérdezés 
+### IP lekérdezés 
 
 ```bash
 docker network inspect llmnet
@@ -242,7 +242,7 @@ docker network inspect llmnet
 Mivel a vault-ot kell először telepíteni, lekérdezzük az ip tartományt, hogy ezt később feltudjuk használni és beállítani a Framework telepítésnél. 
 Fontos, hogy ebben a tartományban kell a többi konténernek is elindulni. Ezt az ip beállítást aktualizálni kell a Framework-ban is.
 
-## Role létrehozás
+### Role létrehozás
 
 Most csinálunk egy role-t az agentnek, docker network-ot állítunk be, ez azért fontos, mert csak a docker networkből enged be
 klienseket, kívülről nem. És itt is, csak a vault-agent tud lekérdezni, aminek beállítjuk fixen a 172.22.0.42 ip-t.
@@ -277,7 +277,7 @@ A ...0.42 pedig egy fix ip cím lesz, amit a vault-agent-nek állítunk be a Fra
     ```
 ![](images/vault/media/image22.png)
 
-## Role lekérdezése
+### Role lekérdezése
 
 ```bash
 docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault vault read auth/approle/role/vault-agent-role
@@ -285,7 +285,7 @@ docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault vault read auth/approl
 
 ![](images/vault/media/image23.png)
 
-## Role ID lekérdezése
+### Role ID lekérdezése
 
 ```bash
 docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault vault read auth/approle/role/vault-agent-role/role-id
@@ -295,13 +295,13 @@ docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault vault read auth/approl
 
 A role_id-t el kell menteni.
 
-## Policy feltöltés, frissítés
+### Policy feltöltés, frissítés
 
 ```bash
 ccai01admin@ccai01keret:~/ccaikeret/vault-agent$ docker exec -it vault vault policy write agent-policy /vault/config/agent-policy.hcl
 ```
 
-# Vault Agent integráció (AppRole)
+## Vault Agent integráció (AppRole)
 
 A rendszer a `HashiCorp Vault Agent` segítségével tölti be a konténerek számára szükséges érzékeny adatokat (jelszavak, API kulcsok, tokenek). A Vault Agent AppRole autentikációval (role_id) csatlakozik a Vault szerverhez, majd a szükséges titkokat fájlok formájában elérhetővé teszi a konténerek számára.
 A cél az, hogy se jelszó, se API kulcs ne szerepeljen a docker-compose fájlban vagy environment változókban, hanem minden titok dinamikusan a Vaultból kerüljön betöltésre.
@@ -317,7 +317,7 @@ A titkok tmpfs Docker volume-ba kerülnek.
 ![](images/vault/media/image33.png)
 
 
-## Template alapú secret generálás
+### Template alapú secret generálás
 
 A Vault Agent template rendszere segítségével a Vaultban tárolt titkok fájlokká kerülnek renderelésre.
 
@@ -334,7 +334,7 @@ Példa template logika:
 A template fájlok helye: `AI_FRAMEWORK/vault-agent/templates`
 
 
-## Vault-agent.hcl
+### Vault-agent.hcl
 
 Az alábbi helyen érhetőel `AI_FRAMEWORK/vault-agent/vault-agent.hcl`
 !!! info "Template" 
@@ -348,7 +348,7 @@ Az alábbi helyen érhetőel `AI_FRAMEWORK/vault-agent/vault-agent.hcl`
     - `ldap_admin_password`
 - Sikeres autentikáció és renderelés után kilép (`exit_after_auth = true`)
 
-## Agent-policy.hcl
+### Agent-policy.hcl
 
 A policy definiálja:
 
@@ -358,7 +358,7 @@ A policy definiálja:
 A Vault Agent az AppRole autentikáció után kap egy `Vault tokent`, amelyre ez a policy érvényes.
 
 
-## Role_id lekérdezése és beállítása
+### Role_id lekérdezése és beállítása
 
 ```bash
 docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault vault read auth/approle/role/vault-agent-role/role-id
@@ -368,23 +368,23 @@ A lekérdezett role_id-t be kell másolni a `AI_FRAMEWORK/vault-agent/role_id` f
 ![](images/vault/media/image34.png)
  
 
-## Konténerek ip tartományának beállítása a compose fájlban
+### Konténerek ip tartományának beállítása a compose fájlban
 
 A `AI_FRAMEWORK/docker-compose.yml` állományban a `172.19.0.0/16` IP tartomány kell, hogy szerepeljen
  ![](images/vault/media/image35.png)
 
-## Memóriában tárolt temp létrehozása a compose fájlban
+### Memóriában tárolt temp létrehozása a compose fájlban
 
  ![](images/vault/media/image36.png)
  
 
-## Secrets törlése
+### Secrets törlése
 A rendszer tartalmaz egy cleanup konténert is: `vault-cleanup`. Ez 180 másodperc után törli a secret fájlokat:
 `rm -rf /secrets/*`. Ez további biztonsági réteget ad a rendszerhez.
 
  ![](images/vault/media/image37.png)
 
-## Vault agent létrehozása a konténerben
+### Vault agent létrehozása a konténerben
 
 Korábban a vault-ban beállítottuk, hogy a `172.19.0.42`-es ip-ről és role_id-val autentikált tokennel lehet csak lekérdezni a secret-eket. Ez a beállítás fontos, hogy összhangban legyen a vault-ban leírtakkal.
 A konténer egyszer megfut, betölti a titkokat, megáll és nem indul újra.
@@ -392,20 +392,20 @@ A konténer egyszer megfut, betölti a titkokat, megáll és nem indul újra.
  ![](images/vault/media/image38.png)
 
 
-# LDAP integráció
+## LDAP integráció
 
 Fontos megjegyezni, hogy az LDAP integrációhoz szükséges elindítani az LDAP-ot, amit jelenleg még nem lehetséges.
 Ha sikeresen feltelepítettük a Vault-ot és integráltuk a Framework-ot, akkor az LDAP is sikeresen elindul. Ezt követően kell az alábbi integrációt elvégezni.
 
 
-## LDAP engedélyezése
+### LDAP engedélyezése
 
 ```bash
 docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault vault auth enable ldap
 ```
 ![](images/vault/media/image25.png)
 
-## LDAP konfigurálása
+### LDAP konfigurálása
 
     ```bash
     docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault \
@@ -420,19 +420,19 @@ docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault vault auth enable ldap
     userattr="uid"
     ```
 
-## Policy betöltés
+### Policy betöltés
 
 ```bash
 docker exec -it vault vault policy write llm-admins /vault/ldap/llm-admins.hcl
 ```
 
-## Csoport-policy hozzárendelés az LDAP-hoz
+### Csoport-policy hozzárendelés az LDAP-hoz
 
 ```bash
 docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault vault write auth/ldap/groups/llm-admins policies="llm-admins"
 ```
 
-## Token lejárat beállítása
+### Token lejárat beállítása
 
 Ha Alice megváltoztatja az LDAP jelszavát, a régi Vault tokenje még működik a lejáratig, ez Vault design.
 Ezért csökkenteni kell a token lejáratát, így jelszócsere után max 1 órán belül minden session megszűnik.
@@ -446,7 +446,7 @@ docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault vault auth tune -defau
 
 ![](images/vault/media/image31.png)
 
-## Ellenőrzés
+### Ellenőrzés
 
 ```bash
 docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault  vault auth list -detailed
@@ -455,39 +455,39 @@ docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -it vault  vault auth list -deta
 ![](images/vault/media/image32.png)
 
 
-# HASZNOS PARANCSOK
+## HASZNOS PARANCSOK
 
-## LLMNETRE terelés:
+### LLMNETRE terelés:
 
 ```bash
 docker network connect llmnet vault
 ```
 
-## 9.2	Futtatási jog beállítás egy sh fájlra
+### 9.2	Futtatási jog beállítás egy sh fájlra
 
 ```bash
 chmod +x litellm-oauth2-proxy/litellm-oauth-secrets.sh
 ```
 	
-## Nexusra kapcsolódás
+### Nexusra kapcsolódás
 
 ```bash
 docker login aiclarity.hu:8443
 ```
 
-## AppRole lekérdezés
+### AppRole lekérdezés
 
 ```bash
 docker exec -it vault vault list auth/approle/role
 ```
 
-## Olvasd ki a token policy-t:
+### Olvasd ki a token policy-t:
 
 ```bash
 docker exec -it vault  vault read auth/approle/role/vault-agent-role
 ```
 
-## Docker vault-agent ip lekérdezés
+### Docker vault-agent ip lekérdezés
 
 ```bash
 {% raw %}
@@ -495,7 +495,7 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' vau
 {% endraw %}
 ```
 
-## Másik szerverről elérés konfiguráció
+### Másik szerverről elérés konfiguráció
 
 ### Vault CLI telepítése
 
@@ -519,7 +519,13 @@ vault version
 
 Nginx-en keresztül lehet elérni a vault-ot, teszteljük le:
 
+```bash
 curl -k https://ipcím:8444/v1/sys/health
+```
+
+### Vault integráció (Vault Agent)
+
+[Vault Agent](../components/vault.md)
 
 
 

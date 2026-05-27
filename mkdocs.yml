@@ -152,7 +152,7 @@ nav:
       - "⚙️ Komponensek beállítása":
           - "📄 Áttekintés": ops/components/index.md
           - "🌐 Traefik": ops/components/traefik.md
-          - "🔐 Vault": ops/components/vault.md
+          - "🔐 Vault Agent": ops/components/vault-agent.md
           - "🔑 Dex": ops/components/dex.md
           - "👥 Ldap": ops/components/ldap.md
           - "🚪 API Gateway": ops/components/api-gateway.md
