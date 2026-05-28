@@ -289,3 +289,7 @@ Ezek után látnunk kell a beállított modellt:
 Ha mindent jól állítottunk be, akkor tudunk már beszélgetni vele, de a max_tokens alapértelmezetten 128-ra van állítva, ezt tudjuk feljebb rakni.
 
 ![](images/litellm_19.png)
+
+## LITELLM adatbázis kapcsolat
+
+[LiteLLM-DB](../components/litellm-db.md)

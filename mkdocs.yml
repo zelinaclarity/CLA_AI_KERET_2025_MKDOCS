@@ -160,6 +160,7 @@ nav:
           - "🖥 Guardrails-db": ops/components/guardrails-db.md
           - "🧠 OpenWebUI": ops/components/openwebui.md
           - "🤖 LiteLLM": ops/components/litellm.md
+          - "🗄️ LiteLLM DB": ops/components/litellm-db.md
           - "📊 Grafana": ops/components/grafana.md
           - "📈 Prometheus": ops/components/prometheus.md
           - "🪵 Loki": ops/components/loki.md
