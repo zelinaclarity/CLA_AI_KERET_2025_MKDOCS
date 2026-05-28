@@ -67,6 +67,7 @@ A monitoring és logging stack beállítása.
 Minden komponens a `llmnet` hálózaton kommunikál.
 
 Ez biztosítja:
+
 - név alapú elérést
 - izolált kommunikációt
 
