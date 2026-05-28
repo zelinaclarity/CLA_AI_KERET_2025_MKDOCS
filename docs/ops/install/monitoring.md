@@ -17,12 +17,6 @@ A monitoring és logging stack beállítása.
 🚀 alkalmazás szint (Phoenix)
 
 
-## Ellenőrzés
-
-- Grafana elérhető
-- logok megjelennek
-
-
 
 ## 🧠 Komponensek szerepe
 
@@ -75,3 +69,31 @@ Minden komponens a `llmnet` hálózaton kommunikál.
 Ez biztosítja:
 - név alapú elérést
 - izolált kommunikációt
+
+## Indítás
+
+### Hálózat ellenőrzése
+
+Előtte ellenőrizni kell, hogy létezik-e a hálózat:
+
+```bash
+docker network ls
+```
+
+### Monitoring indítása
+
+```bash
+docker compose -f docker-compose.monitoring.yml up -d
+```
+
+## Leállítás
+
+```bash
+docker compose -f docker-compose.monitoring.yml down
+```
+
+## Ellenőrzés
+
+- Grafana elérhető
+- logok megjelennek a riportokban
+
