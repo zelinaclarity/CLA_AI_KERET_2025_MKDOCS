@@ -120,7 +120,14 @@ nav:
           - "🖥️ Node-exporter": developer/framework_components/node-exporter.md
           - "📦 Cadvisor": developer/framework_components/cadvisor.md
 
-
+      - "🧠 OpenWebUI beállítások":
+          - "🚀 LiteLLM kapcsolat": developer/openwebui_settings/litellm_connection.md     
+          - "🚀 Rag Gateway kapcsolat": developer/openwebui_settings/rag_gateway_connection.md    
+          - "🚀 Guardrails kapcsolat": developer/openwebui_settings/guardrails_connection.md      
+          - "🚀 Webes Keresés": developer/openwebui_settings/websearch_connection.md   
+          - "🚀 Kép Generálás": developer/openwebui_settings/image_gen.md 
+          - "🚀 Docx Generálás": developer/openwebui_settings/docx_gen.md             
+          
       - "🖼️ Imagek frissítése":
           - "🚀 Kezdő lépések": developer/image_update/update.md
           - "DB mentés és visszatöltés": developer/image_update/db_backup_restore.md
