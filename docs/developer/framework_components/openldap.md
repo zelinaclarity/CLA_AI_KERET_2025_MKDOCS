@@ -149,3 +149,54 @@ Az ldif fájlok betöltéséhez és adminisztrációhoz használjuk.  File/Im
 Végül az alice felhasználónak megváltoztatjuk a jelszavát:
 
 ![](images/ldap_alice.png)
+
+## Felhasználók tömeges létrehozása
+
+### users.csv fájl szerkesztése
+
+Szerkesszük az alábbi fájl-t. Ide kell rögzíteni a felhasználóneveket, amiket szeretnénk létrehozni.
+Ide csak új felhasználókat vegyünk fel, már meglévő felhasználók ne legyenek a fájlban.
+Minden felhasználó új sorba kerüljön. Mentsük el a módosításokat.
+
+```bash
+/start_scripts/users.csv
+```
+
+### ldap_user_add_with_group_from_csv.py fájl futtatása
+
+Ellenőrizzük, hogy elérhető-e a python:
+
+```bash
+python3 --version
+```
+
+Aktiváljuk a Python virtuális környezetet:
+
+```bash
+source venv/bin/activate
+```
+
+Frissítsd a pip-et (a Python csomagkezelőt) a legújabb verzióra:
+
+```bash
+pip install --upgrade pip
+```
+
+Telepítsd az ldap3 Python könyvtárat
+
+```bash
+pip install ldap3
+```
+
+Indítsd el a Python szkriptet, ami létrehozza a users.csv fájlban lévő felhasználókat:
+
+```bash
+python3 start_scripts/ldap_user_add_with_group_from_csv.py
+```
+
+Kérni fogja az ldap_admin jelszavát, jelszó beírása után fogja létrehozni az LDAP felhasználókat.
+
+A létrejött felhasználók:
+
+- induló jelszava: start123
+- csoport: ai-basic 
